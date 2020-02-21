@@ -126,12 +126,12 @@ bool Config::parseArgs(int argc, char** argv)
 std::ostream& operator <<(std::ostream& out, const Config& config)
 {
 	out << "type:      " << (config.type == CONFIG_CLIENT ? "client" : "server") << std::endl;
-	out << "rosType:   " << (config.rosType == CONFIG_SUBSCRIBER ? "subscriber" : "publisher");
-	out << std::endl;
 	if (config.type == CONFIG_CLIENT)
 	out << "address:   " << config.address << std::endl;
 	if (config.type == CONFIG_SERVER)
 	out << "port:      " << config.address << std::endl;
+	out << "rosType:   " << (config.rosType == CONFIG_SUBSCRIBER ? "subscriber" : "publisher");
+	out << std::endl;
 	out << "topicName: " << config.topicName;
 
 	return out;

@@ -27,8 +27,8 @@ private:
 
 public:
 	int type; // CONFIG_CLIENT, CONFIG_SERVER
-	int rosType; // CONFIG_SUBSCRIBER, CONFIG_PUBLISHER
 	std::string address;
+	int rosType; // CONFIG_SUBSCRIBER, CONFIG_PUBLISHER
 	std::string topicName; // name of topic
 
 	Config();

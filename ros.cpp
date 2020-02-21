@@ -9,6 +9,8 @@
 #include "ros.hpp"
 #include "net.hpp"
 
+#include "time.hpp"
+
 #include <cstdint>
 #include <ctime>
 #include <string>
@@ -40,9 +42,7 @@ void rosCallback(const sensor_msgs::JointState& msg)
 void rosInitNode()
 {
 	// Используем время в микросекундах как сид случайности
-	timespec time;
-	clock_gettime(CLOCK_REALTIME, &time);
-	srand((uint64_t)(time.tv_sec) * 1000000 + time.tv_nsec / 1000);
+	srand(getCTimeMicrosecond());
 	int zero = 0;
 	ros::init(zero, NULL, std::string("redirect_") + std::to_string(rand() % 1000000));
 	n = new ros::NodeHandle;

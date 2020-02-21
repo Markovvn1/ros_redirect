@@ -10,6 +10,9 @@
 #include "ros.hpp"
 
 #include "CrossSocket/socket.hpp"
+#include "compile_time.hpp"
+
+#define VERSION __TIME_UNIX__
 
 #include <unistd.h>
 
@@ -57,9 +60,13 @@ void netInitServer(Config* config)
 		break;
 	}
 
+	// version verification
+	uint64_t version = VERSION;
+	client.send((char*)&version, 8);
+
 	int clientRosType = config->rosType == CONFIG_SUBSCRIBER ? CONFIG_PUBLISHER : CONFIG_SUBSCRIBER;
 	client.send((char*)&clientRosType, 4);
-	int len = config->topicName.length() + 1;
+	int len = config->topicName.length();
 	client.send((char*)&len, 4);
 	client.send(config->topicName.c_str(), len);
 }
@@ -80,13 +87,21 @@ void netInitClient(Config* config)
 		client.connect(config->address.c_str(), atoi(config->address.c_str() + i + 1));
 	config->address[i] = ':';
 
+	// version verification
+	uint64_t version;
+	client.recv((char*)&version, 8);
+	if (version != VERSION)
+	{
+		client.close();
+		printf("You use different version of software!\n");
+		return;
+	}
+
 	client.recv((char*)&config->rosType, 4);
 	int len;
 	client.recv((char*)&len, 4);
-	char* buf = new char[len];
-	client.recv(buf, len);
-	config->topicName = std::string(buf);
-	delete [] buf;
+	config->topicName.resize(len);
+	client.recv(&config->topicName[0], len);
 }
 
 void netDeinitClient()
