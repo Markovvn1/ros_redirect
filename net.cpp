@@ -9,6 +9,7 @@
 #include "net.hpp"
 #include "ros.hpp"
 
+#include "time.hpp"
 #include "CrossSocket/socket.hpp"
 #include "compile_time.hpp"
 
@@ -47,6 +48,8 @@ void netInitServer(Config* config)
 
 	if (!server.isActive()) return;
 
+	uint64_t startTime = getCTimeMicrosecond();
+
 	while (true)
 	{
 		client = server.accept();
@@ -54,6 +57,12 @@ void netInitServer(Config* config)
 		if (!client.isActive())
 		{
 			usleep(10000);
+			if (getCTimeMicrosecond() - startTime > 10000000)
+			{
+				printf("[LOG]: waiting for client\n");
+				startTime += 10000000;
+			}
+
 			continue;
 		}
 
@@ -83,8 +92,17 @@ void netInitClient(Config* config)
 	int i = config->address.find(':');
 	if (i < 0) return;
 	config->address[i] = 0;
+
+	uint64_t startTime = getCTimeMicrosecond();
 	while (!client.isActive())
+	{
 		client.connect(config->address.c_str(), atoi(config->address.c_str() + i + 1));
+		if (getCTimeMicrosecond() - startTime > 10000000)
+		{
+			printf("[LOG]: waiting for server\n");
+			startTime += 10000000;
+		}
+	}
 	config->address[i] = ':';
 
 	// version verification
