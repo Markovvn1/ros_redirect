@@ -30,6 +30,7 @@ public:
 	std::string address;
 	int rosType; // CONFIG_SUBSCRIBER, CONFIG_PUBLISHER
 	std::string topicName; // name of topic
+	int nodeId;
 
 	Config();
 	bool parseArgs(int argc, char** argv);

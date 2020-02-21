@@ -50,6 +50,10 @@ void netInitServer(Config* config)
 
 	uint64_t startTime = getCTimeMicrosecond();
 
+	// Используем время в микросекундах как сид случайности
+	srand(startTime);
+	config->nodeId = rand() % 1000000;
+
 	while (true)
 	{
 		client = server.accept();
@@ -75,6 +79,7 @@ void netInitServer(Config* config)
 
 	int clientRosType = config->rosType == CONFIG_SUBSCRIBER ? CONFIG_PUBLISHER : CONFIG_SUBSCRIBER;
 	client.send((char*)&clientRosType, 4);
+	client.send((char*)&config->nodeId, 4);
 	int len = config->topicName.length();
 	client.send((char*)&len, 4);
 	client.send(config->topicName.c_str(), len);
@@ -116,6 +121,7 @@ void netInitClient(Config* config)
 	}
 
 	client.recv((char*)&config->rosType, 4);
+	client.recv((char*)&config->nodeId, 4);
 	int len;
 	client.recv((char*)&len, 4);
 	config->topicName.resize(len);

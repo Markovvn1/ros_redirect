@@ -15,6 +15,12 @@ using std::map;
 using std::string;
 using std::to_string;
 
+// TODO:
+// 1. Программы завершались если версии не совпадают
+// 2. Возможность закрытия клиента раньше сервера
+// 3. Убрать ошибки при закрытии
+// 4. Добавить возможность изменять пинг и скорость передачи данных
+
 int main(int argc, char **argv)
 {
 	Config config;
@@ -33,6 +39,17 @@ int main(int argc, char **argv)
 		netInitClient(&config);
 
 	cout << config << endl;
+
+	if (config.rosType == CONFIG_PUBLISHER)
+	{
+		rosInitPublisher(&config);
+		netSpin();
+	}
+	else
+	{
+		rosInitSubscriber(&config);
+		rosSpin();
+	}
 
 	return 0;
 }

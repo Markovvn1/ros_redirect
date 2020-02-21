@@ -19,6 +19,7 @@ Config::Config()
 {
 	type = -1;
 	rosType = 0;
+	nodeId = 0;
 }
 
 void Config::showLog()
@@ -130,6 +131,7 @@ std::ostream& operator <<(std::ostream& out, const Config& config)
 	out << "address:   " << config.address << std::endl;
 	if (config.type == CONFIG_SERVER)
 	out << "port:      " << config.address << std::endl;
+	out << "nodeId:    " << config.nodeId << std::endl;
 	out << "rosType:   " << (config.rosType == CONFIG_SUBSCRIBER ? "subscriber" : "publisher");
 	out << std::endl;
 	out << "topicName: " << config.topicName;

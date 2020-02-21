@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "config.hpp"
+
 // Функцию вызывает net когда хочет отправить сообщение в ros
 // Вызывается только если был вызыван rosInitPublisher
 void rosSendData(const char* data, int len);
@@ -15,7 +17,7 @@ void rosSendData(const char* data, int len);
 // Вызывается только если был вызыван rosInitSubscriber
 void rosSpin(); // В этой функции происходит вызов netSendData
 
-void rosInitPublisher(const char* name);
+void rosInitPublisher(Config* config);
 void rosDeinitPublisher();
-void rosInitSubscriber(const char* name);
+void rosInitSubscriber(Config* config);
 void rosDeinitSubscriber();
