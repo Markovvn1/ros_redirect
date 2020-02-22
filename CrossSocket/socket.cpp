@@ -132,12 +132,8 @@ bool Socket::close()
 	::close(data->socketId);
 #endif
 
-	data->lock.lock();
-
 	data->socketId = -1;
 	data->active = false;
-
-	data->lock.unlock();
 
 	return true;
 }
@@ -264,7 +260,7 @@ bool Socket::send(const char* buffer, uint count)
 		else if (result < 0)
 		{
 			if (errno == EINTR || errno == EWOULDBLOCK || errno == 0) continue;
-			// Ошибка при чтении
+			// Ошибка при записи
 			data->lock.unlock();
 			close();
 			return false;

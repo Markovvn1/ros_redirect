@@ -15,9 +15,9 @@
 void rosSendData(const char* data, int len);
 
 // Вызывается только если был вызыван rosInitSubscriber
-void rosSpin(); // В этой функции происходит вызов netSendData
+bool rosSpin(Config* config); // В этой функции происходит вызов netSendData
 
-void rosInitPublisher(Config* config);
-void rosDeinitPublisher();
-void rosInitSubscriber(Config* config);
-void rosDeinitSubscriber();
+bool rosInitPublisher(Config* config);
+bool rosDeinitPublisher(Config* config);
+bool rosInitSubscriber(Config* config);
+bool rosDeinitSubscriber(Config* config);

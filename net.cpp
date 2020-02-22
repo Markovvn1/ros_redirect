@@ -26,7 +26,7 @@ void netSendData(const char* data, int len)
 	client.send(data, len);
 }
 
-void netSpin()
+bool netSpin(Config* config)
 {
 	while (client.isActive())
 	{
@@ -35,18 +35,20 @@ void netSpin()
 
 		char* buf = new char[len];
 		client.recv(buf, len);
-		rosSendData(buf, len);
+
+		if (client.isActive()) rosSendData(buf, len);
 		delete [] buf;
 	}
+	return true;
 }
 
-void netInitServer(Config* config)
+bool netInitServer(Config* config)
 {
 	server.open();
 	server.bind(stoi(config->address));
 	server.listen(5);
 
-	if (!server.isActive()) return;
+	if (!server.isActive()) return false;
 
 	uint64_t startTime = getCTimeMicrosecond();
 
@@ -63,7 +65,7 @@ void netInitServer(Config* config)
 			usleep(10000);
 			if (getCTimeMicrosecond() - startTime > 10000000)
 			{
-				printf("[LOG]: waiting for client\n");
+				printf("[LOG]: Waiting for client\n");
 				startTime += 10000000;
 			}
 
@@ -76,6 +78,13 @@ void netInitServer(Config* config)
 	// version verification
 	uint64_t version = VERSION;
 	client.send((char*)&version, 8);
+	client.recv((char*)&version, 8);
+	if (version != VERSION)
+	{
+		client.close();
+		printf("[ERROR]: You use different version of software!\n");
+		return false;
+	}
 
 	int clientRosType = config->rosType == CONFIG_SUBSCRIBER ? CONFIG_PUBLISHER : CONFIG_SUBSCRIBER;
 	client.send((char*)&clientRosType, 4);
@@ -83,19 +92,21 @@ void netInitServer(Config* config)
 	int len = config->topicName.length();
 	client.send((char*)&len, 4);
 	client.send(config->topicName.c_str(), len);
+	return true;
 }
 
-void netDeinitServer()
+bool netDeinitServer(Config* config)
 {
 	client.close();
 	server.close();
+	return true;
 }
 
-void netInitClient(Config* config)
+bool netInitClient(Config* config)
 {
 	client.open();
 	int i = config->address.find(':');
-	if (i < 0) return;
+	if (i < 0) return false;
 	config->address[i] = 0;
 
 	uint64_t startTime = getCTimeMicrosecond();
@@ -104,20 +115,21 @@ void netInitClient(Config* config)
 		client.connect(config->address.c_str(), atoi(config->address.c_str() + i + 1));
 		if (getCTimeMicrosecond() - startTime > 10000000)
 		{
-			printf("[LOG]: waiting for server\n");
+			printf("[LOG]: Waiting for server\n");
 			startTime += 10000000;
 		}
 	}
 	config->address[i] = ':';
 
 	// version verification
-	uint64_t version;
+	uint64_t version = VERSION;
+	client.send((char*)&version, 8);
 	client.recv((char*)&version, 8);
 	if (version != VERSION)
 	{
 		client.close();
 		printf("You use different version of software!\n");
-		return;
+		return false;
 	}
 
 	client.recv((char*)&config->rosType, 4);
@@ -126,9 +138,11 @@ void netInitClient(Config* config)
 	client.recv((char*)&len, 4);
 	config->topicName.resize(len);
 	client.recv(&config->topicName[0], len);
+	return true;
 }
 
-void netDeinitClient()
+bool netDeinitClient(Config* config)
 {
 	client.close();
+	return true;
 }

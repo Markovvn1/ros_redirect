@@ -20,8 +20,8 @@
 #include <sensor_msgs/JointState.h>
 
 ros::NodeHandle* n;
-ros::Publisher publisher;
-ros::Subscriber subscriber;
+ros::Publisher* publisher;
+ros::Subscriber* subscriber;
 
 sensor_msgs::JointState msg;
 
@@ -49,12 +49,13 @@ void rosSendData(const char* data, int len)
 
 	if (shift != len) throw std::runtime_error("rosSendData(): shift != gLen");
 
-	publisher.publish(msg);
+	publisher->publish(msg);
 }
 
-void rosSpin()
+bool rosSpin(Config* config)
 {
 	ros::spin();
+	return true;
 }
 
 void rosCallback(const sensor_msgs::JointState& msg)
@@ -100,24 +101,30 @@ void rosDeinitNode()
 	delete n;
 }
 
-void rosInitPublisher(Config* config)
+bool rosInitPublisher(Config* config)
 {
 	rosInitNode(config->nodeId);
-	publisher = n->advertise<sensor_msgs::JointState>(config->topicName.c_str(), 1);
+	publisher = new ros::Publisher(n->advertise<sensor_msgs::JointState>(config->topicName.c_str(), 1));
+	return ros::ok();
 }
 
-void rosDeinitPublisher()
+bool rosDeinitPublisher(Config* config)
 {
 	rosDeinitNode();
+	delete publisher;
+	return true;
 }
 
-void rosInitSubscriber(Config* config)
+bool rosInitSubscriber(Config* config)
 {
 	rosInitNode(config->nodeId);
-	subscriber = n->subscribe(config->topicName.c_str(), 1, rosCallback);
+	subscriber = new ros::Subscriber(n->subscribe(config->topicName.c_str(), 1, rosCallback));
+	return ros::ok();
 }
 
-void rosDeinitSubscriber()
+bool rosDeinitSubscriber(Config* config)
 {
 	rosDeinitNode();
+	delete subscriber;
+	return true;
 }
