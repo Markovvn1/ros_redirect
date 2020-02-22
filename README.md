@@ -7,7 +7,7 @@
 roscpp, rosconsole_log4cxx, rosconsole_backend_interface, log4cxx, console_bridge, rosconsole, roscpp_serialization, xmlrpcpp, rostime, cpp_common
 
 ### Использованные репозитории
-Спасибо Markovvn1 (о, это я :smile:) за репозиторий [CrossSocket](https://github.com/Markovvn1/CrossSocket)
+Спасибо Markovvn1 (о, это я :blush:) за репозиторий [CrossSocket](https://github.com/Markovvn1/CrossSocket)   
 Спасибо [Dennis](instructable.com/member/nqtronix) за файл compile_time.hpp
 
 ### Особенности
