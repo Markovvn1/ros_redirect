@@ -8,7 +8,7 @@ roscpp, rosconsole_log4cxx, rosconsole_backend_interface, log4cxx, console_bridg
 
 ### Использованные репозитории
 Спасибо Markovvn1 (о, это я :blush:) за репозиторий [CrossSocket](https://github.com/Markovvn1/CrossSocket)   
-Спасибо [Dennis](instructable.com/member/nqtronix) за файл compile_time.hpp
+Спасибо [Dennis](http://instructable.com/member/nqtronix) за файл compile_time.hpp
 
 ### Особенности
 - Тип с которым будет работать программа, а так же как именно будет перводится этот тип в байты и наоборт нужно прописывать в файл ros.cpp (то есть он не может быть изменен после компиляции)
